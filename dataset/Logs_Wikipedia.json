@@ -1,0 +1,38 @@
+{
+	"name": "Logs_Wikipedia",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Wikipedia_LS",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"YearDS": {
+				"type": "string"
+			},
+			"MonthDS": {
+				"type": "string"
+			},
+			"DayDS": {
+				"type": "string"
+			},
+			"HourDS": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat(dataset().YearDS,'/',dataset().YearDS,'-',dataset().MonthDS,'/pageviews-',dataset().YearDS,dataset().MonthDS,dataset().DayDS,if(less(int(dataset().HourDS),10),'-0','-'),dataset().HourDS,'0000.gz')",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

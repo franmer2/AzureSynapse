@@ -1,0 +1,108 @@
+{
+	"name": "PowerBI_DS_Refresh",
+	"properties": {
+		"description": "Refresh Power BI Dataset",
+		"activities": [
+			{
+				"name": "GetAADToken",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('https://login.microsoftonline.com/',pipeline().parameters.TenantID,'/oauth2/token')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					"body": {
+						"value": "@concat('grant_type=client_credentials&resource=https://analysis.windows.net/powerbi/api&client_id=',pipeline().parameters.ClientID,'&client_secret=',pipeline().parameters.Secret)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Refresh PBI Dataset",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "GetAADToken",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('https://api.powerbi.com/v1.0/myorg/groups/',pipeline().parameters.PBIWorkspaceID,'/datasets/',pipeline().parameters.PBIDatasetID,'/refreshes')",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"headers": {
+						"Authorization": {
+							"value": "@concat(string(activity('GetAADToken').output.token_type),' ',string(activity('GetAADToken').output.access_token))",
+							"type": "Expression"
+						}
+					},
+					"body": {
+						"value": "{\"Hello\":\"World\"}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"TenantID": {
+				"type": "string",
+				"defaultValue": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+			},
+			"ClientID": {
+				"type": "string",
+				"defaultValue": "3709ef92-90a9-4d35-8c87-17b85d9dbdd6"
+			},
+			"Secret": {
+				"type": "string",
+				"defaultValue": "l5C-0ViVH_0psGJpK_.Ddkv8S3Q6aAO018"
+			},
+			"PBIWorkspaceID": {
+				"type": "string",
+				"defaultValue": "7e8acec9-b7ce-4e00-b45e-3a55eb4f5cbb"
+			},
+			"PBIDatasetID": {
+				"type": "string",
+				"defaultValue": "df8724aa-d8bc-495e-9f4c-e06d2b944a39"
+			}
+		},
+		"folder": {
+			"name": "Wikipedia/Tests"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-20T22:19:42Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

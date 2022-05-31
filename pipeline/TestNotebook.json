@@ -1,0 +1,44 @@
+{
+	"name": "TestNotebook",
+	"properties": {
+		"activities": [
+			{
+				"name": "Notebook1",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Wikepedia",
+						"type": "NotebookReference"
+					},
+					"parameters": {
+						"yearWiki": {
+							"value": "1969",
+							"type": "string"
+						},
+						"monthWiki": {
+							"value": "12",
+							"type": "string"
+						},
+						"dayWiki": {
+							"value": "20",
+							"type": "string"
+						}
+					},
+					"snapshot": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-04-20T14:14:08Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

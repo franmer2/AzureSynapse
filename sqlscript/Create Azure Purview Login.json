@@ -1,0 +1,17 @@
+{
+	"name": "Create Azure Purview Login",
+	"properties": {
+		"content": {
+			"query": "-- Create Login\nCREATE LOGIN FranmerPurview FROM EXTERNAL PROVIDER;\n\n\n-- Use a managed identity for DEDICATED SQL databases\nCREATE USER FranmerPurview FROM EXTERNAL PROVIDER\nGO\n\nEXEC sp_addrolemember 'db_datareader', FranmerPurview\nGO\n\n-- Use a managed identity for SERVERLESS SQL databases\nCREATE USER FranmerPurview FOR LOGIN FranmerPurview;\nALTER ROLE db_datareader ADD MEMBER FranmerPurview;\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

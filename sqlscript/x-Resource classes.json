@@ -1,0 +1,19 @@
+{
+	"name": "x-Resource classes",
+	"properties": {
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "-- View the resource classes\n\nSELECT name\nFROM   sys.database_principals\nWHERE  name LIKE '%rc%' AND type_desc = 'DATABASE_ROLE';\n\n\n-- Change a user's resource class\n-- To increase a user's resource class\nEXEC sp_addrolemember 'largerc', 'loaduser';\n\n\n-- To decrease the resource class\nEXEC sp_droprolemember 'largerc', 'loaduser';",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "franmerSQLPool",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

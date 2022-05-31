@@ -1,0 +1,19 @@
+{
+	"name": "x-Configure workload management classification",
+	"properties": {
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "-- Configure workload management classification\n-- To run loads with appropriate compute resources, create loading users designated for running loads. \n-- Assign each loading user to a specific resource class or workload group\n\n\n-- Create a workload group, BigDataLoad, that uses workload isolation by reserving:\n-- A minimum of 50% resources with a cap of 100%:\n\n IF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE group_name = 'BigDataLoad')\n BEGIN\n     CREATE WORKLOAD GROUP BigDataLoad WITH  \n     (\n         MIN_PERCENTAGE_RESOURCE = 50 -- integer value\n         ,REQUEST_MIN_RESOURCE_GRANT_PERCENT = 25 --  (guaranteed a minimum of 4 concurrency)\n         ,CAP_PERCENTAGE_RESOURCE = 100\n     );\n END\n\n-- Create a new workload classifier, HeavyLoader that assigns the [asa.sql.import01] user to the BigDataLoad workload group\n\nIF NOT EXISTS (SELECT * FROM sys.workload_management_workload_classifiers WHERE [name] = 'HeavyLoader')\n BEGIN\n     CREATE WORKLOAD Classifier HeavyLoader WITH\n     (\n         Workload_Group ='BigDataLoad',\n         MemberName='asa.sql.import01',\n         IMPORTANCE = HIGH\n     );\n END\n\n\n--  We select from sys.workload_management_workload_classifiers to view all classifiers, including the one we just created\n SELECT * FROM sys.workload_management_workload_classifiers",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "franmerSQLPool",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

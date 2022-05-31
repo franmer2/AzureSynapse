@@ -1,0 +1,20 @@
+{
+	"name": "01_Create Heap Table",
+	"properties": {
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "SET ANSI_NULLS ON\nGO\nSET QUOTED_IDENTIFIER ON\nGO\n\nCREATE TABLE [dbo].[01_Franmer_Demo_Heap]\n( \n\t[Visitors_Tracking_ID] [varchar](255)  NULL,\n\t[Visitors_DE_Country_Name] [varchar](255)  NULL,\n\t[Visitors_DE_City] [varchar](255)  NULL,\n\t[Sessions_Client_ID] [varchar](255)  NULL,\n\t[Sessions_Device_Segment] [varchar](255)  NULL,\n\t[Sessions_Full_Device_Name] [varchar](255)  NULL,\n\t[Sessions_Model] [varchar](255)  NULL,\n\t[Sessions_OS] [varchar](255)  NULL,\n\t[Sessions_Browser_Type] [varchar](255)  NULL,\n\t[Sessions_Browser] [varchar](255)  NULL,\n\t[Sessions_Session_Number] [varchar](255)  NULL,\n\t[Sessions_Hour] [varchar](255)  NULL,\n\t[Sessions_Session_Duration_Export] [varchar](255)  NULL,\n\t[Sessions_Traffic_Source] [varchar](255)  NULL,\n\t[Sessions_Referrer_Host] [varchar](255)  NULL,\n\t[Sessions_Search_Phrase] [varchar](255)  NULL,\n\t[PageViews_Campaign_PV] [varchar](255)  NULL,\n\t[PageViews_Page_Country_Name] [varchar](255)  NULL,\n\t[PageViews_Page_Language] [varchar](255)  NULL,\n\t[PageViews_Page] [varchar](255)  NULL,\n\t[PageViews_Animation] [varchar](255)  NULL,\n\t[PageViews_Internal_Search_Phrase] [varchar](255)  NULL,\n\t[Events_Position] [varchar](255)  NULL,\n\t[Events_LinkID] [varchar](255)  NULL,\n\t[Events_Event_Type] [varchar](255)  NULL,\n\t[Events_Payment_Method] [varchar](255)  NULL,\n\t[Events_Shipping_Method] [varchar](255)  NULL,\n\t[Events_Sku] [varchar](255)  NULL,\n\t[Events_Quantity] [varchar](255)  NULL,\n\t[Events_Stock] [varchar](255)  NULL,\n\t[Events_Price] [varchar](255)  NULL,\n\t[Events_Currency] [varchar](255)  NULL,\n\t[Events_Order_Total_Amount] [varchar](255)  NULL,\n\t[VisitCount] [int]  NOT NULL\n)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tHEAP\n)\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

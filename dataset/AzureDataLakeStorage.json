@@ -1,0 +1,22 @@
+{
+	"name": "AzureDataLakeStorage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TheVaultGen2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "z1Wikipedia_datasets",
+				"fileSystem": "wikipedia"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

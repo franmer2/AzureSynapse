@@ -1,0 +1,43 @@
+{
+	"name": "AzureDataLakeStorageParam",
+	"properties": {
+		"description": "Dataset with parameters",
+		"linkedServiceName": {
+			"referenceName": "TheVaultGen2",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"YearDS": {
+				"type": "string"
+			},
+			"MonthDS": {
+				"type": "string"
+			},
+			"DayDS": {
+				"type": "string"
+			},
+			"HourDS": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"annotations": [
+			"Parameters"
+		],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('pageviews-',dataset().YearDS,dataset().MonthDS,dataset().DayDS,if(less(int(dataset().HourDS),10),'-0','-'),dataset().HourDS,'0000.gz')",
+					"type": "Expression"
+				},
+				"folderPath": "z1Wikipedia_datasets",
+				"fileSystem": "wikipedia"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

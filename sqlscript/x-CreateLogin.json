@@ -1,0 +1,19 @@
+{
+	"name": "x-CreateLogin",
+	"properties": {
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "CREATE LOGIN [asa.sql.import01] WITH PASSWORD = '<PasswordHere>';\nGO\n\n\nCREATE USER [asa.sql.import01] FOR LOGIN [asa.sql.import01]\n\tWITH DEFAULT_SCHEMA = dbo\nGO\n\nGRANT CONNECT TO [asa.sql.import01]\n\n\nEXEC sp_addrolemember 'db_owner', 'asa.sql.import01';",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

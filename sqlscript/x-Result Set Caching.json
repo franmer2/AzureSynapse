@@ -1,0 +1,19 @@
+{
+	"name": "x-Result Set Caching",
+	"properties": {
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "SELECT is_result_set_caching_on,*\nFROM   sys.databases\nWHERE  name = 'FranmerSQLPool'\n\n-- Turn on/off result-set caching for a database\n-- Must be run on the MASTER database\nALTER DATABASE {database_name}  \nSET RESULT_SET_CACHING ON -- { ON | OFF }\n\n\n-- Return all query requests with cache hits\n-- Run on target data warehouse\nSELECT *\nFROM   sys.dm_pdw_request_steps\nWHERE  command like '%DWResultCacheDb%' \n       AND step_index = 0",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

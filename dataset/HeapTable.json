@@ -1,0 +1,155 @@
+{
+	"name": "HeapTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQLPoolIngestion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "Visitors_Tracking_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Visitors_DE_Country_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Visitors_DE_City",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Client_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Device_Segment",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Full_Device_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Model",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_OS",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Browser_Type",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Browser",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Session_Number",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Hour",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Session_Duration_Export",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Traffic_Source",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Referrer_Host",
+				"type": "varchar"
+			},
+			{
+				"name": "Sessions_Search_Phrase",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Campaign_PV",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Page_Country_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Page_Language",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Page",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Animation",
+				"type": "varchar"
+			},
+			{
+				"name": "PageViews_Internal_Search_Phrase",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Position",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_LinkID",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Event_Type",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Payment_Method",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Shipping_Method",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Sku",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Quantity",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Stock",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Price",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Currency",
+				"type": "varchar"
+			},
+			{
+				"name": "Events_Order_Total_Amount",
+				"type": "varchar"
+			},
+			{
+				"name": "VisitCount",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "01_Franmer_Demo_Heap"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

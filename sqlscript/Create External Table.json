@@ -1,0 +1,18 @@
+{
+	"name": "Create External Table",
+	"properties": {
+		"description": "External Table to CSV",
+		"content": {
+			"query": "-- Master Key creation\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Pass123';\nGO\n\n-- Scoped Credential\nCREATE DATABASE SCOPED CREDENTIAL [sqlondemand]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2020-02-10&st=2021-09-22T16%3A24%3A14Z&se=2040-12-03T17%3A24%3A00Z&sr=c&sp=rle&sig=Vqbw3hSTgbwc2P7wOhVQmLVItiqsxckCaBGm1evKws0%3D'\nGO\n\n-- If scoped credential is needed\n-- ALTER DATABASE SCOPED CREDENTIAL [sqlondemand] WITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n-- SECRET = 'sv=2020-02-10&st=2021-09-22T16%3A24%3A14Z&se=2040-12-03T17%3A24%3A00Z&sr=c&sp=rle&sig=Vqbw3hSTgbwc2P7wOhVQmLVItiqsxckCaBGm1evKws0%3D'\n-- GO\n\n\n\n-- External Data Source\nCREATE EXTERNAL DATA SOURCE SqlOnDemandDemo WITH (\n    LOCATION = 'https://thevaultgen2.blob.core.windows.net',\n    CREDENTIAL = sqlondemand\n);\n\n-- External File Format\nCREATE EXTERNAL FILE FORMAT CSVInternalDemo\nWITH\n(  \n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n        FIELD_TERMINATOR = ','\n    )\n)\n\n-- Create External Table\nCREATE EXTERNAL TABLE dbo.Contoso_EXT (\n   Location_ID VARCHAR(10),\n   Ind_Location VARCHAR(50),\n   C1 VARCHAR(10),\n   C2 VARCHAR(10),\n   C3 VARCHAR(10)\n\n)\nWITH (\n    LOCATION='/csv/internalDemo.csv',\n    DATA_SOURCE=SqlOnDemandDemo,\n    FILE_FORMAT=CSVInternalDemo\n);\n\nSelect * From dbo.Contoso_EXT\n\n\n-- Reset Demo --\nDROP EXTERNAL TABLE dbo.Contoso_EXT\nDROP EXTERNAL FILE FORMAT CSVInternalDemo\nDROP EXTERNAL DATA SOURCE SqlOnDemandDemo \nDROP DATABASE SCOPED CREDENTIAL [sqlondemand] \n\n\nGRANT REFERENCES ON DATABASE SCOPED CREDENTIAL::[sqlondemand] TO [FranmerPurview];\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "FranmerServerlessDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

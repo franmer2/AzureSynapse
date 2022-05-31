@@ -1,0 +1,20 @@
+{
+	"name": "x-List database roles members",
+	"properties": {
+		"description": "The query returns the members of the database roles.",
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "SELECT DP1.name AS DatabaseRoleName,   \n   isnull (DP2.name, 'No members') AS DatabaseUserName   \n FROM sys.database_role_members AS DRM  \n RIGHT OUTER JOIN sys.database_principals AS DP1  \n   ON DRM.role_principal_id = DP1.principal_id  \n LEFT OUTER JOIN sys.database_principals AS DP2  \n   ON DRM.member_principal_id = DP2.principal_id  \nWHERE DP1.type = 'R'\nORDER BY DP1.name;\n\nSELECT DP1.name AS DatabaseRoleName,   \n   isnull (DP2.name, 'No members') AS DatabaseUserName   \n FROM sys.database_role_members AS DRM  \n RIGHT OUTER JOIN sys.database_principals AS DP1  \n   ON DRM.role_principal_id = DP1.principal_id  \n LEFT OUTER JOIN sys.database_principals AS DP2  \n   ON DRM.member_principal_id = DP2.principal_id  \nWHERE DP2.name = 'IngestAccount'\nORDER BY DP1.name;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "franmerSQLPool",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

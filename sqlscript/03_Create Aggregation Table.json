@@ -1,0 +1,21 @@
+{
+	"name": "03_Create Aggregation Table",
+	"properties": {
+		"description": "Prepare table for Power BI composite model",
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "EXECUTE AS USER = 'IngestAccount'\n\nCREATE TABLE [dbo].[03_Franmer_Demo_Hash_aggr]\nWITH\n(\n DISTRIBUTION = ROUND_ROBIN\n ,CLUSTERED COLUMNSTORE INDEX\n)\n\nAS\n\nSELECT [Visitors_DE_City]\n,[Sessions_Device_Segment]\n,[Sessions_Model]\n,[Sessions_OS]\n,[Sessions_Browser_Type]\n,[Sessions_Traffic_Source]\n,SUM ([VisitCount]) As VisitCount\n FROM [dbo].[02_Franmer_Demo_Hash]\nGROUP BY [Visitors_DE_City], [Sessions_Device_Segment],[Sessions_Model], [Sessions_OS], [Sessions_Browser_Type], [Sessions_Traffic_Source]\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

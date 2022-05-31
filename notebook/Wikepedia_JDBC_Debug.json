@@ -1,0 +1,82 @@
+{
+	"name": "Wikepedia_JDBC_Debug",
+	"properties": {
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "FranmerSpark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/5eed10dc-e0d7-42c5-961e-1ccd3b6dd500/resourceGroups/AzureSynapseEastUs1/providers/Microsoft.Synapse/workspaces/franmersynapse2/bigDataPools/FranmerSpark",
+				"name": "FranmerSpark",
+				"type": "Spark",
+				"endpoint": "https://franmersynapse2.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/FranmerSpark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"files = mssparkutils.fs.ls(\"abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z2Wikipedia_temp/\")\r\n",
+					"for x in files:\r\n",
+					"    if x.name !=\"_SUCCESS\":\r\n",
+					"        WikipediaFile = x.path"
+				],
+				"attachments": null,
+				"execution_count": 7
+			}
+		]
+	}
+}

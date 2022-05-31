@@ -1,0 +1,21 @@
+{
+	"name": "09_Reset_Franmer_Demo",
+	"properties": {
+		"description": "Reset demo",
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "DROP TABLE [dbo].[01_Franmer_Demo_Heap]\nDROP TABLE [dbo].[02_Franmer_Demo_Hash]\nDROP TABLE [dbo].[03_Franmer_Demo_Hash_aggr]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

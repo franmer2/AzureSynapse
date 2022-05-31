@@ -1,0 +1,21 @@
+{
+	"name": "02_Create CTAS Table",
+	"properties": {
+		"description": "Create table with HASH Distribution and CCI ",
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "EXECUTE AS USER = 'IngestAccount'\n\n\nCREATE TABLE [dbo].[02_Franmer_Demo_Hash]\nWITH\n(\n DISTRIBUTION = HASH ( [Visitors_DE_Country_Name] )\n ,CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT  *\nFROM    [dbo].[01_Franmer_Demo_Heap]; \n\nSELECT COUNT_BIG(*) as Nb_Rows FROM [dbo].[02_Franmer_Demo_Hash]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

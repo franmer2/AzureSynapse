@@ -1,0 +1,20 @@
+{
+	"name": "x-Select login and username",
+	"properties": {
+		"description": "Retrieve login and user name",
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "select sp.name as login,\n       sp.type_desc as login_type,\n      \n       sp.create_date,\n       sp.modify_date,\n       case when sp.is_disabled = 1 then 'Disabled'\n            else 'Enabled' end as status\nfrom sys.server_principals sp\n\n\nselect name as username,\n       create_date,\n       modify_date,\n       type_desc as type,\n       authentication_type_desc as authentication_type\nfrom sys.database_principals\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "franmerSQLPool",
+				"type": "SqlPool"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

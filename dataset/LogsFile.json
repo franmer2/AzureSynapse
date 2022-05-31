@@ -1,0 +1,159 @@
+{
+	"name": "LogsFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TheVaultGen2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "demofranmer.parquet",
+				"folderPath": "parquets",
+				"fileSystem": "azuresynapse2"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Visitors_Tracking_ID",
+				"type": "UTF8"
+			},
+			{
+				"name": "Visitors_DE_Country_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "Visitors_DE_City",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Client_ID",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Device_Segment",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Full_Device_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Model",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_OS",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Browser_Type",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Browser",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Session_Number",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Hour",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Session_Duration_Export",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Traffic_Source",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Referrer_Host",
+				"type": "UTF8"
+			},
+			{
+				"name": "Sessions_Search_Phrase",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Campaign_PV",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Page_Country_Name",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Page_Language",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Page",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Animation",
+				"type": "UTF8"
+			},
+			{
+				"name": "PageViews_Internal_Search_Phrase",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Position",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_LinkID",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Event_Type",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Payment_Method",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Shipping_Method",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Sku",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Quantity",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Stock",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Price",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Currency",
+				"type": "UTF8"
+			},
+			{
+				"name": "Events_Order_Total_Amount",
+				"type": "UTF8"
+			},
+			{
+				"name": "VisitCount",
+				"type": "INT32"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

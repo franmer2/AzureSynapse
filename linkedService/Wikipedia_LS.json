@@ -1,0 +1,20 @@
+{
+	"name": "Wikipedia_LS",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "Link Service to Wikipedia logs",
+		"annotations": [
+			"Wikipedia"
+		],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://dumps.wikimedia.org/other/pageviews/",
+			"enableServerCertificateValidation": false,
+			"authenticationType": "Anonymous"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

@@ -1,0 +1,247 @@
+{
+	"name": "Wikipedia_ADB",
+	"properties": {
+		"description": "Demo Wikipedia pour Azure Synapse avec Azure Databricks notebook",
+		"activities": [
+			{
+				"name": "Get Storage Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "AzureDataLakeStorage",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Test if folder is created",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Storage Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('Get Storage Metadata').output.Exists",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Delete1",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "AzureDataLakeStorage",
+									"type": "DatasetReference"
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Log Files download",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Test if folder is created",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.Hours",
+						"type": "Expression"
+					},
+					"batchCount": 6,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "Logs_Wikipedia",
+									"type": "DatasetReference",
+									"parameters": {
+										"YearDS": {
+											"value": "@pipeline().parameters.Year",
+											"type": "Expression"
+										},
+										"MonthDS": {
+											"value": "@pipeline().parameters.Month",
+											"type": "Expression"
+										},
+										"DayDS": {
+											"value": "@pipeline().parameters.Day",
+											"type": "Expression"
+										},
+										"HourDS": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureDataLakeStorageParam",
+									"type": "DatasetReference",
+									"parameters": {
+										"YearDS": {
+											"value": "@pipeline().parameters.Year",
+											"type": "Expression"
+										},
+										"MonthDS": {
+											"value": "@pipeline().parameters.Month",
+											"type": "Expression"
+										},
+										"DayDS": {
+											"value": "@pipeline().parameters.Day",
+											"type": "Expression"
+										},
+										"HourDS": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Notebook1",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Log Files download",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/franmer@microsoft.com/WikipediaSynapse_ADLSGen2",
+					"baseParameters": {
+						"yearWiki": {
+							"value": "@pipeline().parameters.Year",
+							"type": "Expression"
+						},
+						"monthWiki": {
+							"value": "@pipeline().parameters.Month",
+							"type": "Expression"
+						},
+						"dayWiki": {
+							"value": "@pipeline().parameters.Day",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"Year": {
+				"type": "string"
+			},
+			"Month": {
+				"type": "string"
+			},
+			"Day": {
+				"type": "string"
+			},
+			"Hours": {
+				"type": "array"
+			}
+		},
+		"folder": {
+			"name": "Wikipedia/Tests"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-20T22:19:34Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

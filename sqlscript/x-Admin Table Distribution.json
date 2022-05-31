@@ -1,0 +1,19 @@
+{
+	"name": "x-Admin Table Distribution",
+	"properties": {
+		"folder": {
+			"name": "Admin"
+		},
+		"content": {
+			"query": "Select schema_name,\ntable_name,\ndistribution_policy_name,\ntable_row_count,\n[Max_distribution_row_count],\n[Min_distribution_row_count],\n[avg_distribution_row_count],\nCASE WHEN table_row_count = 0 then -1\nelse abs([Max_distribution_row_count] *1.0 - [Min_distribution_row_count]*1.0) / [Max_distribution_row_count] *100.0\nEND as [Table Skew Percent]FROM (\nSELECT\ns.name AS [schema_name]\n, t.name AS [table_name]\n, tp.[distribution_policy_desc] AS [distribution_policy_name], sum([row_count]) AS [table_row_count]\n, max(row_count) AS [Max_distribution_row_count]\n, min(row_count) AS [Min_distribution_row_count]\n, avg(row_count) AS [avg_distribution_row_count]\nfrom\nsys.schemas s\nINNER JOIN sys.tables t\nON s.[schema_id] = t.[schema_id]\nINNER JOIN sys.pdw_table_distribution_properties tp\nON t.[object_id] = tp.[object_id]\nINNER JOIN sys.pdw_table_mappings tm\nON t.[object_id] = tm.[object_id]\nINNER JOIN sys.pdw_nodes_tables nt\nON tm.[physical_name] = nt.[name]\nINNER JOIN sys.dm_pdw_nodes pn\nON nt.[pdw_node_id] = pn.[pdw_node_id]\nINNER JOIN sys.pdw_distributions di\nON nt.[distribution_id] = di.[distribution_id]\nINNER JOIN sys.dm_pdw_nodes_db_partition_stats nps\nON nt.[object_id] = nps.[object_id]\nAND nt.[pdw_node_id] = nps.[pdw_node_id]\nAND nt.[distribution_id] = nps.[distribution_id]\nwhere tp.[distribution_policy_desc] ='HASH'\nGROUP BY\ns.name\n, t.name\n, tp.[distribution_policy_desc]\n) A\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"name": "master",
+				"type": "SqlOnDemand"
+			}
+		},
+		"type": "SqlQuery"
+	}
+}

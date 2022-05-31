@@ -1,0 +1,313 @@
+{
+	"name": "Wikipedia_AS",
+	"properties": {
+		"description": "Demo Wikipedia pour Azure Synapse avec Azure Synapse Notebook. Notebook avec SQL account",
+		"activities": [
+			{
+				"name": "Get Storage Metadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "AzureDataLakeStorage",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Test if folder is created",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Storage Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('Get Storage Metadata').output.Exists",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Delete1",
+							"type": "Delete",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "AzureDataLakeStorage",
+									"type": "DatasetReference"
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Log Files download",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Test if folder is created",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.Hours",
+						"type": "Expression"
+					},
+					"batchCount": 6,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "Logs_Wikipedia",
+									"type": "DatasetReference",
+									"parameters": {
+										"YearDS": {
+											"value": "@pipeline().parameters.Year",
+											"type": "Expression"
+										},
+										"MonthDS": {
+											"value": "@pipeline().parameters.Month",
+											"type": "Expression"
+										},
+										"DayDS": {
+											"value": "@pipeline().parameters.Day",
+											"type": "Expression"
+										},
+										"HourDS": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureDataLakeStorageParam",
+									"type": "DatasetReference",
+									"parameters": {
+										"YearDS": {
+											"value": "@pipeline().parameters.Year",
+											"type": "Expression"
+										},
+										"MonthDS": {
+											"value": "@pipeline().parameters.Month",
+											"type": "Expression"
+										},
+										"DayDS": {
+											"value": "@pipeline().parameters.Day",
+											"type": "Expression"
+										},
+										"HourDS": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Notebook1",
+				"type": "SynapseNotebook",
+				"dependsOn": [
+					{
+						"activity": "Log Files download",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Wikepedia_JDBC",
+						"type": "NotebookReference"
+					},
+					"parameters": {
+						"yearWiki": {
+							"value": {
+								"value": "@pipeline().parameters.Year",
+								"type": "Expression"
+							},
+							"type": "string"
+						},
+						"monthWiki": {
+							"value": {
+								"value": "@pipeline().parameters.Month",
+								"type": "Expression"
+							},
+							"type": "string"
+						},
+						"dayWiki": {
+							"value": {
+								"value": "@pipeline().parameters.Day",
+								"type": "Expression"
+							},
+							"type": "string"
+						}
+					},
+					"snapshot": true
+				}
+			},
+			{
+				"name": "PBI Dataset Refresh",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Notebook1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "https://prod-21.canadacentral.logic.azure.com:443/workflows/9e13130a2d4141d8b3e191abbc7da05a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sn2X3r6_koY-pELmLZXEaT1bQh0cKDKzzoGDOmHhraI",
+						"type": "Expression"
+					},
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET"
+				}
+			}
+		],
+		"parameters": {
+			"Year": {
+				"type": "string"
+			},
+			"Month": {
+				"type": "string"
+			},
+			"Day": {
+				"type": "string"
+			},
+			"Hours": {
+				"type": "array",
+				"defaultValue": [
+					0,
+					1,
+					2,
+					3,
+					4,
+					5,
+					6,
+					7,
+					8,
+					9,
+					10,
+					11,
+					12,
+					13,
+					14,
+					15,
+					16,
+					17,
+					18,
+					19,
+					20,
+					21,
+					22,
+					23
+				]
+			}
+		},
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-20T21:13:04Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

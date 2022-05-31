@@ -1,0 +1,281 @@
+{
+	"name": "Wikepedia_JDBC",
+	"properties": {
+		"folder": {
+			"name": "Wikipedia"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "FranmerSpark",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/5eed10dc-e0d7-42c5-961e-1ccd3b6dd500/resourceGroups/AzureSynapseEastUs1/providers/Microsoft.Synapse/workspaces/franmersynapse2/bigDataPools/FranmerSpark",
+				"name": "FranmerSpark",
+				"type": "Spark",
+				"endpoint": "https://franmersynapse2.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/FranmerSpark",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true,
+					"tags": [
+						"parameters"
+					]
+				},
+				"source": [
+					"yearWiki = \"2021\"\r\n",
+					"monthWiki = \"05\"\r\n",
+					"dayWiki = \"04\""
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"from pyspark.sql.types import *\r\n",
+					"\r\n",
+					"csvSchema = StructType([ \r\n",
+					"  StructField(\"project\", StringType(), True),\r\n",
+					"  StructField(\"page\", StringType(), True),\r\n",
+					"  StructField(\"requests\", IntegerType(), True),\r\n",
+					"  StructField(\"size\", IntegerType(), True)\r\n",
+					" ])\r\n",
+					"\r\n",
+					"WikipediaDF = spark.read.load('abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z1Wikipedia_datasets/pageviews-*.gz', format='csv', schema= csvSchema, delimiter= \" \" )"
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"WikipediaDF.createOrReplaceTempView(\"pageviews\")"
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"WikipediaDF_Filtered = spark.sql(\"SELECT page, project, SUM(requests) AS requests, {0} AS Year, {1} AS Month, {2} AS Day FROM pageviews WHERE project IN ('en', 'fr') AND page NOT IN ('Main_Page', '-','Special:Search','Sp?cial:Search','Wikipédia:Accueil_principal','Special:CreateAccount','Wikipedia:Contact_us','Spécial:Recherche','Special:ElectronPdf','Special:RecentChangesLinked','Wikipédia:Accueil_principal','Special:Watchlist','Special:Book','Special:RecentChanges','Special:WhatLinksHere','Special:MyContributions','Wikipedia:RA/AE','Special:Contributions','Special:UserLogout','Spécial:Liste_de_suivi','Spécial:Connexion','Spécial:ElectronPdf','Spécial:Créer_un_compte','Spécial:Pages_liées','Spécial:Journal','Spécial:Livre','Accueil','Spécial:Modifications_récentes','Spécial:Pages_liées/Aide:Discussion') GROUP BY page, project HAVING requests > 0 ORDER BY 3 DESC LIMIT 1000\".format(yearWiki, monthWiki, dayWiki))"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": true
+				},
+				"source": [
+					"%%spark\r\n",
+					"try {\r\n",
+					"mssparkutils.fs.rm(\"abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z2Wikipedia_temp\", true)\r\n",
+					"} catch {\r\n",
+					"  case e:Exception=> println(\"No Folder\")\r\n",
+					"}"
+				],
+				"attachments": null,
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"WikipediaDF_Filtered.coalesce(1).write.parquet(\"abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z2Wikipedia_temp/\")"
+				],
+				"attachments": null,
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"server_name = \"jdbc:sqlserver://franmersqlforsynapse.database.windows.net\"\r\n",
+					"database_name = \"franmerSQLSynapseDataMart\"\r\n",
+					"url = server_name + \";\" + \"databaseName=\" + database_name + \";\"\r\n",
+					"\r\n",
+					"table_name = \"Wikipedialogs\"\r\n",
+					"username = \"franmer\"\r\n",
+					"password = \"Code1Code1\" \r\n",
+					"\r\n",
+					"try:\r\n",
+					"  WikipediaDF_Filtered.write \\\r\n",
+					"    .format(\"com.microsoft.sqlserver.jdbc.spark\") \\\r\n",
+					"    .mode(\"append\") \\\r\n",
+					"    .option(\"url\", url) \\\r\n",
+					"    .option(\"dbtable\", table_name) \\\r\n",
+					"    .option(\"user\", username) \\\r\n",
+					"    .option(\"password\", password) \\\r\n",
+					"    .save()\r\n",
+					"except ValueError as error :\r\n",
+					"    print(\"Connector write failed\", error)"
+				],
+				"attachments": null,
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"files = mssparkutils.fs.ls(\"abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z2Wikipedia_temp/\")\r\n",
+					"for x in files:\r\n",
+					"    if x.name !=\"_SUCCESS\":\r\n",
+					"        WikipediaFile = x.path"
+				],
+				"attachments": null,
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"WikiepediaDestinationFile = \"abfss://wikipedia@thevaultgen2.dfs.core.windows.net/z3Wikipedia_results/{0}/{1}/{2}/Wikipedia_{0}_{1}_{2}.parquet\".format(yearWiki,monthWiki,dayWiki)\r\n",
+					"mssparkutils.fs.cp(WikipediaFile,WikiepediaDestinationFile)"
+				],
+				"attachments": null,
+				"execution_count": 10
+			}
+		]
+	}
+}

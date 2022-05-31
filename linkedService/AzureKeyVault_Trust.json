@@ -1,0 +1,12 @@
+{
+	"name": "AzureKeyVault_Trust",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"description": "A strong spirit transcends rules. ",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://Trust.vault.azure.net/"
+		}
+	}
+}
