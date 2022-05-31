@@ -1,0 +1,20 @@
+{
+	"name": "Monitor Memory",
+	"properties": {
+		"folder": {
+			"name": "Monitoring"
+		},
+		"content": {
+			"query": "-- Memory consumption\nSELECT\n  pc1.cntr_value as Curr_Mem_KB,\n  pc1.cntr_value/1024.0 as Curr_Mem_MB,\n  (pc1.cntr_value/1048576.0) as Curr_Mem_GB,\n  pc2.cntr_value as Max_Mem_KB,\n  pc2.cntr_value/1024.0 as Max_Mem_MB,\n  (pc2.cntr_value/1048576.0) as Max_Mem_GB,\n  pc1.cntr_value * 100.0/pc2.cntr_value AS Memory_Utilization_Percentage,\n  pc1.pdw_node_id\nFROM\n-- pc1: current memory\nsys.dm_pdw_nodes_os_performance_counters AS pc1\n-- pc2: total memory allowed for this SQL instance\nJOIN sys.dm_pdw_nodes_os_performance_counters AS pc2\nON pc1.object_name = pc2.object_name AND pc1.pdw_node_id = pc2.pdw_node_id\nWHERE\npc1.counter_name = 'Total Server Memory (KB)'\nAND pc2.counter_name = 'Target Server Memory (KB)'",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

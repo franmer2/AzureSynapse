@@ -1,0 +1,20 @@
+{
+	"name": "Monitoring waiting queries",
+	"properties": {
+		"folder": {
+			"name": "Monitoring"
+		},
+		"content": {
+			"query": "-- Find queries\n-- Replace request_id with value from Step 1.\n\nSELECT waits.session_id,\n      waits.request_id,  \n      requests.command,\n      requests.status,\n      requests.start_time,  \n      waits.type,\n      waits.state,\n      waits.object_type,\n      waits.object_name\nFROM   sys.dm_pdw_waits waits\n   JOIN  sys.dm_pdw_exec_requests requests\n   ON waits.request_id=requests.request_id\nWHERE waits.request_id = 'QID####'\nORDER BY waits.object_name, waits.object_type, waits.state;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

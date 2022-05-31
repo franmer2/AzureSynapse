@@ -1,0 +1,20 @@
+{
+	"name": "Monitor transaction log rollback",
+	"properties": {
+		"folder": {
+			"name": "Monitoring"
+		},
+		"content": {
+			"query": "-- Monitor rollback\n-- If your queries are failing or taking a long time to proceed, \n-- you can check and monitor if you have any transactions rolling back.\n\nSELECT\n    SUM(CASE WHEN t.database_transaction_next_undo_lsn IS NOT NULL THEN 1 ELSE 0 END),\n    t.pdw_node_id,\n    nod.[type]\nFROM sys.dm_pdw_nodes_tran_database_transactions t\nJOIN sys.dm_pdw_nodes nod ON t.pdw_node_id = nod.pdw_node_id\nGROUP BY t.pdw_node_id, nod.[type]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

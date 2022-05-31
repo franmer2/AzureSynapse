@@ -1,0 +1,20 @@
+{
+	"name": "Monitor transaction log size",
+	"properties": {
+		"folder": {
+			"name": "Monitoring"
+		},
+		"content": {
+			"query": "-- Transaction log size\n-- The following query returns the transaction log size on each distribution. \n-- If one of the log files is reaching 160 GB, you should consider scaling up your instance or limiting your transaction size.\n\nSELECT\n  instance_name as distribution_db,\n  cntr_value*1.0/1048576 as log_file_size_used_GB,\n  pdw_node_id\nFROM sys.dm_pdw_nodes_os_performance_counters\nWHERE\ninstance_name like 'Distribution_%'\nAND counter_name = 'Log File(s) Used Size (KB)'",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
