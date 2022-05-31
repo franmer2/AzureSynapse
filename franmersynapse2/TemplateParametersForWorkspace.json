@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "franmersynapse2"
+		},
+		"AzureDatabricks_accessToken": {
+			"value": ""
+		},
+		"AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"SQLPoolIngestion_connectionString": {
+			"value": ""
+		},
+		"TheVaultGen2_accountKey": {
+			"value": ""
+		},
+		"franmersynapse2-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_Aeffacer_properties_typeProperties_url": {
+			"value": "https://demofranmer.dfs.core.windows.net"
+		},
+		"AzureKeyVault_Trust_properties_typeProperties_baseUrl": {
+			"value": "https://Trust.vault.azure.net/"
+		},
+		"TheVaultGen2_properties_typeProperties_url": {
+			"value": "https://thevaultgen2.dfs.core.windows.net"
+		},
+		"Wikipedia_LS_properties_typeProperties_url": {
+			"value": "https://dumps.wikimedia.org/other/pageviews/"
+		},
+		"franmersynapse2-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://thevaultgen2.dfs.core.windows.net"
+		}
+	}
+}
