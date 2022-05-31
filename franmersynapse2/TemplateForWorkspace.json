@@ -2201,6 +2201,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Monitoring Demo')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "-- Other Active Connections\nSELECT * FROM sys.dm_pdw_exec_sessions where status <> 'Closed' and session_id <> session_id();\n\n\n--- STEP 1: Identify the query you wish to investigate\n-- Monitor active queries\nSELECT *\nFROM sys.dm_pdw_exec_requests\nWHERE status not in ('Completed','Failed','Cancelled')\n  AND session_id <> session_id()\nORDER BY submit_time DESC;\n\n-- Find top 10 queries longest running queries\nSELECT TOP 10 *\nFROM sys.dm_pdw_exec_requests\nORDER BY total_elapsed_time DESC;\n\n--- STEP 2: Investigate the query plan\n-------------------------------------------\n-- Query with Label\nSELECT *\nFROM sys.tables\nOPTION (LABEL = 'My Query')\n;\n\n-- Find a query with the Label 'My Query'\n-- Use brackets when querying the label column, as it it a key word\nSELECT  *\nFROM    sys.dm_pdw_exec_requests\nWHERE   [label] = 'My Query';\n-------------------------------------------\n\n-- Find the distributed query plan steps for a specific query.\n-- Replace request_id with value from Step 1.\n\nSELECT * FROM sys.dm_pdw_request_steps\nWHERE request_id = 'QID21576'\nORDER BY step_index;\n\n--- STEP 3: Investigate SQL on the distributed databases\n-- Find the distribution run times for a SQL step.\n-- Replace request_id and step_index with values from Step 1 and 3.\n\nSELECT * FROM sys.dm_pdw_sql_requests\nWHERE request_id = 'QID21576' AND step_index = 2;\n\n-- Find the SQL Server execution plan for a query running on a specific SQL pool or control node.\n-- Replace distribution_id and spid with values from previous query.\n\nDBCC PDW_SHOWEXECUTIONPLAN(1, 78);",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/x-Admin Table Distribution')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
