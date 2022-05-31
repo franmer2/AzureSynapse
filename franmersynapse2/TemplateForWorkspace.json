@@ -2201,6 +2201,75 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Monitor Memory')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "-- Memory consumption\nSELECT\n  pc1.cntr_value as Curr_Mem_KB,\n  pc1.cntr_value/1024.0 as Curr_Mem_MB,\n  (pc1.cntr_value/1048576.0) as Curr_Mem_GB,\n  pc2.cntr_value as Max_Mem_KB,\n  pc2.cntr_value/1024.0 as Max_Mem_MB,\n  (pc2.cntr_value/1048576.0) as Max_Mem_GB,\n  pc1.cntr_value * 100.0/pc2.cntr_value AS Memory_Utilization_Percentage,\n  pc1.pdw_node_id\nFROM\n-- pc1: current memory\nsys.dm_pdw_nodes_os_performance_counters AS pc1\n-- pc2: total memory allowed for this SQL instance\nJOIN sys.dm_pdw_nodes_os_performance_counters AS pc2\nON pc1.object_name = pc2.object_name AND pc1.pdw_node_id = pc2.pdw_node_id\nWHERE\npc1.counter_name = 'Total Server Memory (KB)'\nAND pc2.counter_name = 'Target Server Memory (KB)'",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Monitor transaction log rollback')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "-- Monitor rollback\n-- If your queries are failing or taking a long time to proceed, \n-- you can check and monitor if you have any transactions rolling back.\n\nSELECT\n    SUM(CASE WHEN t.database_transaction_next_undo_lsn IS NOT NULL THEN 1 ELSE 0 END),\n    t.pdw_node_id,\n    nod.[type]\nFROM sys.dm_pdw_nodes_tran_database_transactions t\nJOIN sys.dm_pdw_nodes nod ON t.pdw_node_id = nod.pdw_node_id\nGROUP BY t.pdw_node_id, nod.[type]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Monitor transaction log size')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "-- Transaction log size\n-- The following query returns the transaction log size on each distribution. \n-- If one of the log files is reaching 160 GB, you should consider scaling up your instance or limiting your transaction size.\n\nSELECT\n  instance_name as distribution_db,\n  cntr_value*1.0/1048576 as log_file_size_used_GB,\n  pdw_node_id\nFROM sys.dm_pdw_nodes_os_performance_counters\nWHERE\ninstance_name like 'Distribution_%'\nAND counter_name = 'Log File(s) Used Size (KB)'",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Monitoring Demo')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -2209,7 +2278,53 @@
 					"name": "Monitoring"
 				},
 				"content": {
-					"query": "-- Other Active Connections\nSELECT * FROM sys.dm_pdw_exec_sessions where status <> 'Closed' and session_id <> session_id();\n\n\n--- STEP 1: Identify the query you wish to investigate\n-- Monitor active queries\nSELECT *\nFROM sys.dm_pdw_exec_requests\nWHERE status not in ('Completed','Failed','Cancelled')\n  AND session_id <> session_id()\nORDER BY submit_time DESC;\n\n-- Find top 10 queries longest running queries\nSELECT TOP 10 *\nFROM sys.dm_pdw_exec_requests\nORDER BY total_elapsed_time DESC;\n\n--- STEP 2: Investigate the query plan\n-------------------------------------------\n-- Query with Label\nSELECT *\nFROM sys.tables\nOPTION (LABEL = 'My Query')\n;\n\n-- Find a query with the Label 'My Query'\n-- Use brackets when querying the label column, as it it a key word\nSELECT  *\nFROM    sys.dm_pdw_exec_requests\nWHERE   [label] = 'My Query';\n-------------------------------------------\n\n-- Find the distributed query plan steps for a specific query.\n-- Replace request_id with value from Step 1.\n\nSELECT * FROM sys.dm_pdw_request_steps\nWHERE request_id = 'QID21576'\nORDER BY step_index;\n\n--- STEP 3: Investigate SQL on the distributed databases\n-- Find the distribution run times for a SQL step.\n-- Replace request_id and step_index with values from Step 1 and 3.\n\nSELECT * FROM sys.dm_pdw_sql_requests\nWHERE request_id = 'QID21576' AND step_index = 2;\n\n-- Find the SQL Server execution plan for a query running on a specific SQL pool or control node.\n-- Replace distribution_id and spid with values from previous query.\n\nDBCC PDW_SHOWEXECUTIONPLAN(1, 78);",
+					"query": "-- Other Active Connections\nSELECT * FROM sys.dm_pdw_exec_sessions where status <> 'Closed' and session_id <> session_id();\n\n\n--- STEP 1: Identify the query you wish to investigate\n-- Monitor active queries\nSELECT *\nFROM sys.dm_pdw_exec_requests\nWHERE status not in ('Completed','Failed','Cancelled')\n  AND session_id <> session_id()\nORDER BY submit_time DESC;\n\n-- Find top 10 queries longest running queries\nSELECT TOP 10 *\nFROM sys.dm_pdw_exec_requests\nORDER BY total_elapsed_time DESC;\n\n\n\n--- STEP 2: Investigate the query plan\n-------------------------------------------\n-- Query with Label\nSELECT *\nFROM sys.tables\nOPTION (LABEL = 'My Query')\n;\n\n-- Find a query with the Label 'My Query'\n-- Use brackets when querying the label column, as it it a key word\nSELECT  *\nFROM    sys.dm_pdw_exec_requests\nWHERE   [label] = 'My Query';\n-------------------------------------------\n\n-- Find the distributed query plan steps for a specific query.\n-- Replace request_id with value from Step 1.\n\nSELECT * FROM sys.dm_pdw_request_steps\nWHERE request_id = 'QID21576'\nORDER BY step_index;\n\n\n\n--- STEP 3: Investigate SQL on the distributed databases\n-- Find the distribution run times for a SQL step.\n-- Replace request_id and step_index with values from Step 1 and 3.\n\nSELECT * FROM sys.dm_pdw_sql_requests\nWHERE request_id = 'QID21576' AND step_index = 2;\n\n-- Find the SQL Server execution plan for a query running on a specific SQL pool or control node.\n-- Replace distribution_id and spid with values from previous query.\n\nDBCC PDW_SHOWEXECUTIONPLAN(1, 78);\n\n\n--- STEP 4: Investigate data movement on the distributed databases\n\n-- Find information about all the workers completing a Data Movement Step.\n-- Replace request_id and step_index with values from Step 1 and 3.\n\nSELECT * FROM sys.dm_pdw_dms_workers\nWHERE request_id = 'QID####' AND step_index = 2;\n\n\n-- Find the SQL Server estimated plan for a query running on a specific SQL pool Compute or control node.\n-- Replace distribution_id and spid with values from previous query.\n\nDBCC PDW_SHOWEXECUTIONPLAN(55, 238);\n\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Monitoring TempDB')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "----- Create Views\nPRINT 'Info: Creating the ''microsoft.vw_sql_requests'' view';\nGO\n\nCREATE VIEW microsoft.vw_sql_requests\nAS\n(\n\tSELECT\n\t\tsr.request_id,\n\t\tsr.step_index,\n\t\t(CASE WHEN (sr.distribution_id = -1 ) THEN (SELECT pdw_node_id FROM sys.dm_pdw_nodes WHERE type = 'CONTROL') ELSE d.pdw_node_id END) AS pdw_node_id,\n\t\tsr.distribution_id,\n\t\tsr.status,\n\t\tsr.error_id,\n\t\tsr.start_time,\n\t\tsr.end_time,\n\t\tsr.total_elapsed_time,\n\t\tsr.row_count,\n\t\tsr.spid,\n\t\tsr.command\n\tFROM\n\t\tsys.pdw_distributions AS d\n\t\tRIGHT JOIN sys.dm_pdw_sql_requests AS sr ON d.distribution_id = sr.distribution_id\n)\nGO\n------------------------------\n\n\n-- Monitor tempdb\nSELECT\n    sr.request_id,\n    ssu.session_id,\n    ssu.pdw_node_id,\n    sr.command,\n    sr.total_elapsed_time,\n    exs.login_name AS 'LoginName',\n    DB_NAME(ssu.database_id) AS 'DatabaseName',\n    (es.memory_usage * 8) AS 'MemoryUsage (in KB)',\n    (ssu.user_objects_alloc_page_count * 8) AS 'Space Allocated For User Objects (in KB)',\n    (ssu.user_objects_dealloc_page_count * 8) AS 'Space Deallocated For User Objects (in KB)',\n    (ssu.internal_objects_alloc_page_count * 8) AS 'Space Allocated For Internal Objects (in KB)',\n    (ssu.internal_objects_dealloc_page_count * 8) AS 'Space Deallocated For Internal Objects (in KB)',\n    CASE es.is_user_process\n    WHEN 1 THEN 'User Session'\n    WHEN 0 THEN 'System Session'\n    END AS 'SessionType',\n    es.row_count AS 'RowCount'\nFROM sys.dm_pdw_nodes_db_session_space_usage AS ssu\n    INNER JOIN sys.dm_pdw_nodes_exec_sessions AS es ON ssu.session_id = es.session_id AND ssu.pdw_node_id = es.pdw_node_id\n    INNER JOIN sys.dm_pdw_nodes_exec_connections AS er ON ssu.session_id = er.session_id AND ssu.pdw_node_id = er.pdw_node_id\n    INNER JOIN microsoft.vw_sql_requests AS sr ON ssu.session_id = sr.spid AND ssu.pdw_node_id = sr.pdw_node_id\n    LEFT JOIN sys.dm_pdw_exec_requests exr on exr.request_id = sr.request_id\n    LEFT JOIN sys.dm_pdw_exec_sessions exs on exr.session_id = exs.session_id\nWHERE DB_NAME(ssu.database_id) = 'tempdb'\n    AND es.session_id <> @@SPID\n    AND es.login_name <> 'sa'\nORDER BY sr.request_id;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Monitoring waiting queries')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Monitoring"
+				},
+				"content": {
+					"query": "-- Find queries\n-- Replace request_id with value from Step 1.\n\nSELECT waits.session_id,\n      waits.request_id,  \n      requests.command,\n      requests.status,\n      requests.start_time,  \n      waits.type,\n      waits.state,\n      waits.object_type,\n      waits.object_name\nFROM   sys.dm_pdw_waits waits\n   JOIN  sys.dm_pdw_exec_requests requests\n   ON waits.request_id=requests.request_id\nWHERE waits.request_id = 'QID####'\nORDER BY waits.object_name, waits.object_type, waits.state;",
 					"metadata": {
 						"language": "sql"
 					},
