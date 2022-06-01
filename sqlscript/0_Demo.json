@@ -1,0 +1,20 @@
+{
+	"name": "0_Demo",
+	"properties": {
+		"folder": {
+			"name": "Performance Demo"
+		},
+		"content": {
+			"query": "EXEC dbo.sp_whoisactive;\n\nEXEC dbo.sp_whoisactive_deepdive @request_id = 'QID10741526', @distributions = 0, @tempdb = 0",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
