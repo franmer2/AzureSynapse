@@ -2339,6 +2339,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/sp_synapse_queries')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Performance Demo"
+				},
+				"content": {
+					"query": "\nCREATE PROC [dbo].[sp_whoisactive] AS\n\nIF EXISTS (SELECT * FROM sys.dm_pdw_exec_requests WHERE status = 'Suspended' AND session_id <> session_id())\nBEGIN\n\n\tSELECT    DISTINCT s.session_id,\n\t\t\ts.request_id,\n\t\t\t--s.login_time,\n\t\t\ts.login_name,\n\t\t\ta.status,\n\t\t\tDATEDIFF(MINUTE,a.start_time,GETDATE()) AS running_time\t,\n\t\t\tDATEDIFF(MINUTE,a.submit_time,a.start_time) AS time_in_queue\t,\n\t\t\tDATEADD(HOUR,2,a.submit_time\t\t) AS submit_time\t\t,\n\t\t\tDATEADD(HOUR,2,a.start_time\t\t\t) AS start_time\t\t\t,\n\t\t\tDATEADD(HOUR,2,a.end_compile_time\t) AS end_compile_time\t,\n\t\t\tDATEADD(HOUR,2,a.end_time\t\t\t) AS end_time\t\t\t,\n\t\t\ta.[label],\n\t\t\ta.command,\n\t\t\tl.blocking_session_id,\n\t\t\ts.app_name,\n\t\t\tA.resource_class,\n\t\tCONCAT('EXEC dbo.sp_whoisactive_deepdive @request_id = ''',s.request_id,''', @distributions = 0, @tempdb = 0') deepdive\n\t\t\t--SELECT COUNT(*)\n\tFROM    sys.dm_pdw_exec_sessions s\n\tLEFT JOIN sys.dm_pdw_exec_requests a ON        s.request_id = a.request_id\n\tLEFT JOIN (\n\t\t\t\tSELECT  t1.request_session_id,\n\t\t\t\t\t\tt2.blocking_session_id\n\t\t\t\tFROM sys.dm_pdw_nodes_tran_locks as t1\n\t\t\t\tLEFT JOIN sys.dm_pdw_nodes_os_waiting_tasks as t2\n\t\t\t\tON t1.lock_owner_address = t2.resource_address\n\t\t\t) l\n\tON        l.request_session_id = s.sql_spid\n\tWHERE    a.status IN ('Suspended')\n\tAND\t\ts.session_id <> Session_id() \n\tORDER BY start_time DESC\n\nEND\n\n\tSELECT    DISTINCT s.session_id,\n\t\t\ts.request_id,\n\t\t\t--s.login_time,\n\t\t\ts.login_name,\n\t\t\ta.status,\n\t\t\tDATEDIFF(MINUTE,a.start_time,GETDATE()) AS running_time\t,\n\t\t\tDATEDIFF(MINUTE,a.submit_time,a.start_time) AS time_in_queue\t,\n\t\t\tDATEADD(HOUR,2,a.submit_time\t\t) AS submit_time\t\t,\n\t\t\tDATEADD(HOUR,2,a.start_time\t\t\t) AS start_time\t\t\t,\n\t\t\tDATEADD(HOUR,2,a.end_compile_time\t) AS end_compile_time\t,\n\t\t\tDATEADD(HOUR,2,a.end_time\t\t\t) AS end_time\t\t\t,\n\t\t\ta.[label],\n\t\t\ta.command,\n\t\t\tl.blocking_session_id,\n\t\t\ts.app_name,\n\t\t\tA.resource_class,\n\t\tCONCAT('EXEC dbo.sp_whoisactive_deepdive @request_id = ''',s.request_id,''', @distributions = 0, @tempdb = 0') deepdive\n\t\t\t--SELECT COUNT(*)\n\tFROM    sys.dm_pdw_exec_sessions s\n\tLEFT JOIN sys.dm_pdw_exec_requests a ON        s.request_id = a.request_id\n\tLEFT JOIN (\n\t\t\t\tSELECT  t1.request_session_id,\n\t\t\t\t\t\tt2.blocking_session_id\n\t\t\t\tFROM sys.dm_pdw_nodes_tran_locks as t1\n\t\t\t\tLEFT JOIN sys.dm_pdw_nodes_os_waiting_tasks as t2\n\t\t\t\tON t1.lock_owner_address = t2.resource_address\n\t\t\t) l\n\tON        l.request_session_id = s.sql_spid\n\tWHERE    a.status IN ('Running')\n\tAND\t\ts.session_id <> Session_id() \n\tORDER BY start_time DESC\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/x-Admin Table Distribution')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
