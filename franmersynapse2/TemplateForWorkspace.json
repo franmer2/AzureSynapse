@@ -2224,29 +2224,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Create Taxi Table')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "Demo"
-				},
-				"content": {
-					"query": "IF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'NYCTaxiTripSmall' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE dbo.NYCTaxiTripSmall\n    (\n     [DateID] int,\n     [MedallionID] int,\n     [HackneyLicenseID] int,\n     [PickupTimeID] int,\n     [DropoffTimeID] int,\n     [PickupGeographyID] int,\n     [DropoffGeographyID] int,\n     [PickupLatitude] float,\n     [PickupLongitude] float,\n     [PickupLatLong] nvarchar(4000),\n     [DropoffLatitude] float,\n     [DropoffLongitude] float,\n     [DropoffLatLong] nvarchar(4000),\n     [PassengerCount] int,\n     [TripDurationSeconds] int,\n     [TripDistanceMiles] float,\n     [PaymentType] nvarchar(4000),\n     [FareAmount] numeric(19,4),\n     [SurchargeAmount] numeric(19,4),\n     [TaxAmount] numeric(19,4),\n     [TipAmount] numeric(19,4),\n     [TollsAmount] numeric(19,4),\n     [TotalAmount] numeric(19,4)\n    )\nWITH\n    (\n    DISTRIBUTION = ROUND_ROBIN,\n     CLUSTERED COLUMNSTORE INDEX\n     -- HEAP\n    )\nGO\n\nCOPY INTO dbo.NYCTaxiTripSmall\n(DateID 1, MedallionID 2, HackneyLicenseID 3, PickupTimeID 4, DropoffTimeID 5,\nPickupGeographyID 6, DropoffGeographyID 7, PickupLatitude 8, PickupLongitude 9, \nPickupLatLong 10, DropoffLatitude 11, DropoffLongitude 12, DropoffLatLong 13, \nPassengerCount 14, TripDurationSeconds 15, TripDistanceMiles 16, PaymentType 17, \nFareAmount 18, SurchargeAmount 19, TaxAmount 20, TipAmount 21, TollsAmount 22, \nTotalAmount 23)\nFROM 'https://thevaultgen2.dfs.core.windows.net/taxi/NYCTripSmall.parquet'\nWITH\n(\n    FILE_TYPE = 'PARQUET'\n    ,MAXERRORS = 0\n    ,IDENTITY_INSERT = 'OFF'\n)\n\n\n",
-					"metadata": {
-						"language": "sql"
-					},
-					"currentConnection": {
-						"databaseName": "franmerSQLPool",
-						"poolName": "franmerSQLPool"
-					},
-					"resultLimit": 5000
-				},
-				"type": "SqlQuery"
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Monitor Memory')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -2371,6 +2348,52 @@
 				},
 				"content": {
 					"query": "-- Find queries\n-- Replace request_id with value from Step 1.\n\nSELECT waits.session_id,\n      waits.request_id,  \n      requests.command,\n      requests.status,\n      requests.start_time,  \n      waits.type,\n      waits.state,\n      waits.object_type,\n      waits.object_name\nFROM   sys.dm_pdw_waits waits\n   JOIN  sys.dm_pdw_exec_requests requests\n   ON waits.request_id=requests.request_id\nWHERE waits.request_id = 'QID####'\nORDER BY waits.object_name, waits.object_type, waits.state;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Taxi_Query')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Demo"
+				},
+				"content": {
+					"query": "SELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Taxi_Taxi Table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Demo"
+				},
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'NYCTaxiTripSmall' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE dbo.NYCTaxiTripSmall\n    (\n     [DateID] int,\n     [MedallionID] int,\n     [HackneyLicenseID] int,\n     [PickupTimeID] int,\n     [DropoffTimeID] int,\n     [PickupGeographyID] int,\n     [DropoffGeographyID] int,\n     [PickupLatitude] float,\n     [PickupLongitude] float,\n     [PickupLatLong] nvarchar(4000),\n     [DropoffLatitude] float,\n     [DropoffLongitude] float,\n     [DropoffLatLong] nvarchar(4000),\n     [PassengerCount] int,\n     [TripDurationSeconds] int,\n     [TripDistanceMiles] float,\n     [PaymentType] nvarchar(4000),\n     [FareAmount] numeric(19,4),\n     [SurchargeAmount] numeric(19,4),\n     [TaxAmount] numeric(19,4),\n     [TipAmount] numeric(19,4),\n     [TollsAmount] numeric(19,4),\n     [TotalAmount] numeric(19,4)\n    )\nWITH\n    (\n    DISTRIBUTION = ROUND_ROBIN,\n     CLUSTERED COLUMNSTORE INDEX\n     -- HEAP\n    )\nGO\n\nCOPY INTO dbo.NYCTaxiTripSmall\n(DateID 1, MedallionID 2, HackneyLicenseID 3, PickupTimeID 4, DropoffTimeID 5,\nPickupGeographyID 6, DropoffGeographyID 7, PickupLatitude 8, PickupLongitude 9, \nPickupLatLong 10, DropoffLatitude 11, DropoffLongitude 12, DropoffLatLong 13, \nPassengerCount 14, TripDurationSeconds 15, TripDistanceMiles 16, PaymentType 17, \nFareAmount 18, SurchargeAmount 19, TaxAmount 20, TipAmount 21, TollsAmount 22, \nTotalAmount 23)\nFROM 'https://thevaultgen2.dfs.core.windows.net/taxi/NYCTripSmall.parquet'\nWITH\n(\n    FILE_TYPE = 'PARQUET'\n    ,MAXERRORS = 0\n    ,IDENTITY_INSERT = 'OFF'\n)\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
