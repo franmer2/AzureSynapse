@@ -5,7 +5,7 @@
 			"name": "Demo"
 		},
 		"content": {
-			"query": "SELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;",
+			"query": "\nEXPLAIN\nSELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;\n\n\nCREATE LOGIN Demo WITH PASSWORD = 'Code1Code1';\n\n\n\nCREATE USER Demo From LOGIN Demo\nEXEC sp_addrolemember 'db_owner', 'Demo'; ",
 			"metadata": {
 				"language": "sql"
 			},
