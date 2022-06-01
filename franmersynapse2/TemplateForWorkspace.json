@@ -2362,6 +2362,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Rowgroup trimming')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Admin"
+				},
+				"content": {
+					"query": "CREATE VIEW dbo.vCS_rg_physical_stats\nAS\nWITH cte\nAS\n(\nselect   tb.[name]                    AS [logical_table_name]\n,        rg.[row_group_id]            AS [row_group_id]\n,        rg.[state]                   AS [state]\n,        rg.[state_desc]              AS [state_desc]\n,        rg.[total_rows]              AS [total_rows]\n,        rg.[trim_reason_desc]        AS trim_reason_desc\n,        mp.[physical_name]           AS physical_name\nFROM    sys.[schemas] sm\nJOIN    sys.[tables] tb               ON  sm.[schema_id]          = tb.[schema_id]\nJOIN    sys.[pdw_table_mappings] mp   ON  tb.[object_id]          = mp.[object_id]\nJOIN    sys.[pdw_nodes_tables] nt     ON  nt.[name]               = mp.[physical_name]\nJOIN    sys.[dm_pdw_nodes_db_column_store_row_group_physical_stats] rg      ON  rg.[object_id]     = nt.[object_id]\n                                                                            AND rg.[pdw_node_id]   = nt.[pdw_node_id]\n                                        AND rg.[distribution_id]    = nt.[distribution_id]\n)\nSELECT *\nFROM cte;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "franmerSQLPool",
+						"poolName": "franmerSQLPool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Taxi_Create Table')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -2393,7 +2416,7 @@
 					"name": "Demo"
 				},
 				"content": {
-					"query": "SELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;",
+					"query": "\nEXPLAIN\nSELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;\n\n\nCREATE LOGIN Demo WITH PASSWORD = 'Code1Code1';\n\n\n\nCREATE USER Demo From LOGIN Demo\nEXEC sp_addrolemember 'db_owner', 'Demo'; ",
 					"metadata": {
 						"language": "sql"
 					},
