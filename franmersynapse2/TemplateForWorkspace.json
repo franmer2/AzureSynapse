@@ -2168,7 +2168,7 @@
 					"name": "Monitoring"
 				},
 				"content": {
-					"query": "CREATE PROC spWait @Seconds INT\nAS\nBEGIN\n\n    DECLARE @BEGIN DATETIME\n    DECLARE @END DATETIME \n\n    SET @BEGIN = GETDATE()\n    SET @END = DATEADD(\"SECOND\",@Seconds,@BEGIN)\n\n    WHILE (@BEGIN<@END)\n    BEGIN   \n        SET @BEGIN=GETDATE()\n    END\n\nEND\n\nSelect * FROM [01_Franmer_Demo_Heap]\nEXEC spWait 10\nSelect * FROM NYCTaxiTripSmall\n\n",
+					"query": "--CREATE PROC spWait @Seconds INT\n--AS\n--BEGIN\n\n--    DECLARE @BEGIN DATETIME\n--    DECLARE @END DATETIME \n\n--    SET @BEGIN = GETDATE()\n--    SET @END = DATEADD(\"SECOND\",@Seconds,@BEGIN)\n--\n--    WHILE (@BEGIN<@END)\n--    BEGIN   \n--        SET @BEGIN=GETDATE()\n--    END\n\n--END\n\nSelect * FROM [01_Franmer_Demo_Heap]\n--EXEC spWait 10\n--Select * FROM NYCTaxiTripSmall\n\n",
 					"metadata": {
 						"language": "sql"
 					},
