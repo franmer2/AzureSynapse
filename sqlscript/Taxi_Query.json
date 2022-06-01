@@ -1,0 +1,20 @@
+{
+	"name": "Taxi_Query",
+	"properties": {
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "SELECT PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance,\n      AVG(TripDistanceMiles) as AvgTripDistance\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount\nORDER BY PassengerCount;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
