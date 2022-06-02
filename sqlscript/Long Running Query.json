@@ -10,8 +10,8 @@
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
-				"poolName": "Built-in"
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
 			},
 			"resultLimit": 5000
 		},
