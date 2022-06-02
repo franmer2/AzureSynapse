@@ -5,7 +5,7 @@
 			"name": "Performance Demo"
 		},
 		"content": {
-			"query": "Select * FROM [01_Franmer_Demo_Heap]",
+			"query": "EXECUTE AS USER = 'IngestAccount'\nSelect * FROM [01_Franmer_Demo_Heap]",
 			"metadata": {
 				"language": "sql"
 			},

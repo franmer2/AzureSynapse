@@ -1,0 +1,21 @@
+{
+	"name": "05_Create CTAS Table_RoundRobin",
+	"properties": {
+		"description": "Create table with HASH Distribution and CCI ",
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "EXECUTE AS USER = 'IngestAccount'\n\n\nCREATE TABLE [dbo].[03_Franmer_Demo_RoundRobin]\nWITH\n( DISTRIBUTION = ROUND_ROBIN , CLUSTERED COLUMNSTORE INDEX )\nAS\nSELECT  *\nFROM    [dbo].[01_Franmer_Demo_Heap]; \n\nSELECT COUNT_BIG(*) as Nb_Rows FROM [dbo].[03_Franmer_Demo_RoundRobin]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
