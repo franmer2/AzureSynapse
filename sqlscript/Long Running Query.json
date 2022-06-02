@@ -1,0 +1,20 @@
+{
+	"name": "Long Running Query",
+	"properties": {
+		"folder": {
+			"name": "Performance Demo"
+		},
+		"content": {
+			"query": "Select * FROM [01_Franmer_Demo_Heap]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
