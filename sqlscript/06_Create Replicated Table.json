@@ -1,0 +1,20 @@
+{
+	"name": "06_Create Replicated Table",
+	"properties": {
+		"folder": {
+			"name": "Demo"
+		},
+		"content": {
+			"query": "CREATE TABLE myTable\n  (  \n    id int NOT NULL,  \n    lastName varchar(20),  \n    zipCode varchar(6)  \n  )  \nWITH  \n  (   \n    DISTRIBUTION = REPLICATE,\n    CLUSTERED INDEX (lastName)  \n  );",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "franmerSQLPool",
+				"poolName": "franmerSQLPool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
