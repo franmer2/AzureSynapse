@@ -487,7 +487,13 @@
 								"referenceName": "Wikepedia_JDBC_Debug",
 								"type": "NotebookReference"
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -817,7 +823,13 @@
 									"type": "string"
 								}
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -1326,7 +1338,13 @@
 									"type": "string"
 								}
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					},
 					{
@@ -1940,6 +1958,173 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/Wikipedia_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/NYTaxi')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Test"
+				},
+				"annotations": [],
+				"type": "SqlPoolTable",
+				"schema": [
+					{
+						"name": "DateID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MedallionID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "HackneyLicenseID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PickupTimeID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DropoffTimeID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PickupGeographyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DropoffGeographyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PickupLatitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "PickupLongitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "PickupLatLong",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DropoffLatitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DropoffLongitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DropoffLatLong",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PassengerCount",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TripDurationSeconds",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TripDistanceMiles",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "PaymentType",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FareAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "SurchargeAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TaxAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TipAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TollsAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TotalAmount",
+						"type": "decimal",
+						"precision": 19,
+						"scale": 4
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NYCTaxiTripSmall"
+				},
+				"sqlPool": {
+					"referenceName": "franmerSQLPool",
+					"type": "SqlPoolReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/sqlPools/franmerSQLPool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/NYTaxiDestinationSQL')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Test"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NYTaxi"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureSqlDatabase')]"
 			]
 		},
 		{
@@ -4447,6 +4632,18 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/franmerSQLPool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/FranmerSpark')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -4466,18 +4663,6 @@
 				"sparkVersion": "2.4",
 				"isComputeIsolationEnabled": false,
 				"sessionLevelPackagesEnabled": false,
-				"annotations": []
-			},
-			"dependsOn": [],
-			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/franmerSQLPool')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
 				"annotations": []
 			},
 			"dependsOn": [],
