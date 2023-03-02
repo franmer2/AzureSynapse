@@ -18,7 +18,7 @@
 			"value": ""
 		},
 		"franmersynapse2-WorkspaceDefaultSqlServer_connectionString": {
-			"value": ""
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:franmersynapse2.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"AzureDataLakeStorage_Aeffacer_properties_typeProperties_url": {
 			"value": "https://demofranmer.dfs.core.windows.net"

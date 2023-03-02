@@ -25,7 +25,8 @@
 		},
 		"franmersynapse2-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'franmersynapse2-WorkspaceDefaultSqlServer'"
+			"metadata": "Secure string for 'connectionString' of 'franmersynapse2-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:franmersynapse2.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"AzureDataLakeStorage_Aeffacer_properties_typeProperties_url": {
 			"type": "string",
@@ -455,6 +456,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Demo"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-03-29T20:27:42Z"
